@@ -8,6 +8,14 @@ Eine schlanke To-do-App, um schnell zu notieren, was noch erledigt werden muss.
 | **Ersteller** | Nobbi |
 | **Design** | Ninox Design System, Bootstrap 5.3.3 |
 
+## Dashboard und Hosting
+
+| | |
+|---|---|
+| **Auf dem Dashboard anzeigen** | Ja, als Kachel oben im Kopfbereich neben Firmenname und Beschreibung im Mitarbeiter-Organigramm (`mitarbeiter_organigramm.htm`); das Organigramm ist das Dashboard. Die Kachel verlinkt nur auf die gehostete Version. |
+| **Gehostet** | https://nosz.github.io/todoapp (GitHub Pages) |
+| **Stand Veröffentlichung** | Noch nicht von Nobbi hochgeladen; Veröffentlichen nur nach Freigabe |
+
 ## Zweck
 
 Aufgaben in Sekunden erfassen: Seite öffnen, tippen, Enter. Das Eingabefeld ist beim Öffnen sofort aktiv.
