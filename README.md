@@ -53,6 +53,12 @@ Aufgaben in Sekunden erfassen: Seite öffnen, tippen, Enter. Das Eingabefeld ist
 - Getestet (Vorschau): Hinzufügen, Abhaken, Stern, Filter, Löschen, keine Konsolenfehler.
 - Nicht getestet: dauerhaftes Speichern nach Neuladen (in der Vorschau gesperrt), Handy-Ansicht.
 
+## Gemeldete Fehler
+
+| Datum | Meldung | Ergebnis |
+|---|---|---|
+| 2026-10-26 | „Hinzufügen" schreibt auf nosz.github.io/todoapp nichts in die Liste | Lokal nicht nachstellbar: Klick und Enter funktionieren bei 375 px. Quelltext der gehosteten Version zeigt dieselbe Logik. Gehostete Seite konnte nicht im Browser geöffnet werden (gesperrt). Rückfragen an Norbert offen (Gerät, Browser, Konsolenmeldung). |
+
 ## Änderungsverlauf
 
 | Datum | Änderung |
