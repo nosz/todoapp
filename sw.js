@@ -1,7 +1,7 @@
 // Service Worker der To-do-App.
 // WICHTIG: VERSION bei jeder Änderung der App hochzählen (identisch zu meta app-version in index.html).
 // Ändert sich diese Datei, erkennt der Browser eine neue Version und die App zeigt „Neue Version verfügbar“.
-const VERSION = "1.2.0";
+const VERSION = "1.3.1";
 const CACHE = "nobbis-todo-" + VERSION;
 const SHELL = [
   "./",
@@ -35,7 +35,15 @@ self.addEventListener("fetch", event => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
-  // Eigene Dateien: Cache zuerst (schnell und offline), Seitenaufrufe fallen auf index.html zurück
+  // Seitenaufrufe: Netz zuerst (immer die aktuelle Version), offline aus dem Cache
+  if (url.origin === self.location.origin && req.mode === "navigate") {
+    event.respondWith(
+      fetch(req, { cache: "no-cache" }).catch(() => caches.match(req).then(hit => hit || caches.match("./index.html")))
+    );
+    return;
+  }
+
+  // Übrige eigene Dateien: Cache zuerst (schnell und offline)
   if (url.origin === self.location.origin) {
     event.respondWith(
       caches.match(req).then(hit => hit || fetch(req).catch(() => req.mode === "navigate" ? caches.match("./index.html") : Response.error()))
