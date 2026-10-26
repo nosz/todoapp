@@ -75,6 +75,7 @@ Aufgaben in Sekunden erfassen: Seite öffnen, tippen, Enter. Das Eingabefeld ist
 |---|---|
 | 2026-10-26 | Erste Version |
 | 2026-10-26 | In eigenen Ordner mit `index.html` verschoben |
+| 2026-10-26 | (ohne App-Änderung) Lokaler Test mit Server `todo-lokal` (`.claude\launch.json`, Port 8099): Speichern nach Neuladen geprüft (Aufgabe, Fälligkeit und Name bleiben). Zusätzlich Claude-Mod `nobbis-todos` (`/todo`, eigene Liste als Pane, eigener Speicher, nicht synchron mit der Web-App). Der lokale Server liefert `sw.js` falsch aus, deshalb läuft dort der Service Worker nicht; das betrifft nur diesen Test |
 | 2026-10-26 | **1.4.1**: Name im Manifest von „Nobbis To-dos“ auf „To-dos“ geändert (passt zum Seitentitel). Noch nicht hochgeladen |
 | 2026-10-26 | **1.4.0**: Datum pro Aufgabe. „Erstellt“ setzt die App automatisch (nicht änderbar; alte Aufgaben nehmen das Datum aus ihrer ID). „Fällig bis“ ist optional, beim Anlegen und später änderbar; überfällige offene Aufgaben werden rot mit Warn-Icon markiert. Sortierung: Stern, dann früheste Fälligkeit (ohne Datum zuletzt), dann neueste. Export/Import enthalten beide Daten. Noch nicht hochgeladen |
 | 2026-10-26 | **1.3.1**: Warnung „Speichern nicht möglich“ erscheint nur noch, wenn ein Test-Schreiben in den `localStorage` wirklich scheitert (vorher auch bei defekten Altdaten), mit genauerem Text und Hinweis auf Export. Die Warnung in der Vorschau kam, weil dort das Speichern gesperrt ist. Noch nicht hochgeladen |
