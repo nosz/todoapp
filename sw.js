@@ -1,7 +1,7 @@
 // Service Worker der To-do-App.
 // WICHTIG: VERSION bei jeder Änderung der App hochzählen (identisch zu meta app-version in index.html).
 // Ändert sich diese Datei, erkennt der Browser eine neue Version und die App zeigt „Neue Version verfügbar“.
-const VERSION = "1.3.1";
+const VERSION = "1.4.1";
 const CACHE = "nobbis-todo-" + VERSION;
 const SHELL = [
   "./",

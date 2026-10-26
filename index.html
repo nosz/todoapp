@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>To-dos</title>
-<meta name="app-version" content="1.3.1">
+<meta name="app-version" content="1.4.1">
 <meta name="theme-color" content="#4970ff">
 <meta name="description" content="Schnell notieren, was noch zu tun ist.">
 <link rel="manifest" href="manifest.webmanifest">
@@ -51,6 +51,10 @@
     padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 -6px 18px rgba(31,32,38,.2); }
   .update-banner .inner { max-width: 720px; margin: 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .update-banner .btn { min-height: 44px; }
+  .todo .body { flex: 1; min-width: 0; }
+  .todo .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin-top: 4px; font-size: .8rem; color: var(--slate-light); }
+  .todo .meta input[type=date] { width: auto; max-width: 150px; padding: 1px 6px; font-size: .8rem; }
+  .todo.overdue .due { color: #dc2626; font-weight: 500; }
   .todo .txt { cursor: text; }
   .todo .edit-input { flex: 1; min-width: 0; }
   .btn-edit { border: 0; background: rgba(255,255,255,.2); color: #fff; width: 36px; height: 36px; border-radius: 50%; font-size: 1.1rem; line-height: 1; flex: none; }
@@ -84,6 +88,10 @@
            placeholder="Was muss ich noch machen? (Enter zum Speichern)" aria-label="Neue Aufgabe">
     <button class="btn btn-ninox" type="submit"><i class="bi bi-plus-lg" aria-hidden="true"></i> Hinzufügen</button>
   </form>
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <label class="small text-secondary mb-0" for="newDue"><i class="bi bi-calendar-event" aria-hidden="true"></i> Fällig bis (optional)</label>
+    <input id="newDue" form="addForm" type="date" class="form-control form-control-sm" style="max-width:170px">
+  </div>
 
   <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
     <ul class="nav nav-pills" id="filters" role="tablist" aria-label="Filter">
@@ -102,7 +110,7 @@
     <input id="importFile" type="file" accept="application/json,.json" hidden>
     <span class="small text-secondary" id="backupMsg" role="status"></span>
   </div>
-  <p class="small text-secondary mt-4 mb-0" id="version">Version <span data-app-version>1.3.1</span></p>
+  <p class="small text-secondary mt-4 mb-0" id="version">Version <span data-app-version>1.4.1</span></p>
 </main>
 
 <div class="update-banner" id="updateBanner" role="status" aria-live="polite" hidden>
@@ -154,19 +162,32 @@ showNote();
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const $ = id => document.getElementById(id);
 
+// Datum als JJJJ-MM-TT (lokale Zeit), Anzeige als TT.MM.JJJJ
+const dayOf = ms => { const d = new Date(ms); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const fmt = s => s.split("-").reverse().join(".");
+const isOverdue = t => !t.done && !!t.due && t.due < dayOf(Date.now());
+
 function render() {
   const open = todos.filter(t => !t.done).length;
   $("cOpen").textContent = open;
   $("cDone").textContent = todos.length - open;
   let shown = todos.filter(t => filter === "all" || (filter === "done") === t.done);
-  // Wichtiges nach oben, dann neueste zuerst
-  shown = shown.slice().sort((a, b) => (b.star - a.star) || (b.id - a.id));
+  // Wichtiges nach oben, dann früheste Fälligkeit (ohne Datum zuletzt), dann neueste zuerst
+  shown = shown.slice().sort((a, b) => (b.star - a.star) || ((a.due || "9999") < (b.due || "9999") ? -1 : (a.due || "9999") > (b.due || "9999") ? 1 : 0) || (b.id - a.id));
   $("list").innerHTML = shown.length ? shown.map(t => `
-    <div class="todo ${t.done ? "done" : ""} ${t.star ? "important" : ""}">
+    <div class="todo ${t.done ? "done" : ""} ${t.star ? "important" : ""} ${isOverdue(t) ? "overdue" : ""}">
       <input class="form-check-input" type="checkbox" data-done="${t.id}" ${t.done ? "checked" : ""} aria-label="Erledigt">
+      <div class="body">
       ${t.id === editingId
         ? `<input class="form-control edit-input" data-edit="${t.id}" maxlength="300" value="${esc(t.text)}" aria-label="Aufgabe bearbeiten">`
         : `<span class="txt" data-text="${t.id}" tabindex="0" role="button" title="Zum Ändern tippen">${esc(t.text)}</span>`}
+      <div class="meta">
+        <span title="Erstellt (automatisch)"><i class="bi bi-clock" aria-hidden="true"></i> Erstellt ${fmt(dayOf(t.created || t.id))}</span>
+        <label class="due d-flex align-items-center gap-1 mb-0"><i class="bi ${isOverdue(t) ? "bi-exclamation-circle" : "bi-calendar-event"}" aria-hidden="true"></i> Fällig
+          <input type="date" class="form-control form-control-sm" data-due="${t.id}" value="${esc(t.due || "")}" aria-label="Fällig bis">
+        </label>
+      </div>
+      </div>
       <button class="star ${t.star ? "on" : ""}" data-star="${t.id}" type="button" aria-label="Wichtig umschalten" aria-pressed="${!!t.star}"><i class="bi ${t.star ? "bi-star-fill" : "bi-star"}" aria-hidden="true"></i></button>
       <button class="del" data-del="${t.id}" type="button" aria-label="Löschen"><i class="bi bi-trash3" aria-hidden="true"></i></button>
     </div>`).join("")
@@ -224,7 +245,10 @@ $("importFile").addEventListener("change", async () => {
     if (!Array.isArray(list)) throw new Error("format");
     const have = new Set(todos.map(t => t.id));
     const add = list.filter(t => t && typeof t.text === "string" && t.text.trim() && !have.has(t.id))
-      .map((t, n) => ({ id: Number.isFinite(+t.id) ? +t.id : Date.now() + n, text: t.text.trim().slice(0, 300), done: !!t.done, star: t.star ? 1 : 0 }));
+      .map((t, n) => {
+        const id = Number.isFinite(+t.id) ? +t.id : Date.now() + n;
+        return { id, created: Number.isFinite(+t.created) && +t.created > 0 ? +t.created : id, text: t.text.trim().slice(0, 300), done: !!t.done, star: t.star ? 1 : 0, due: /^\d{4}-\d{2}-\d{2}$/.test(t.due) ? t.due : "" };
+      });
     todos = todos.concat(add); save(); render();
     say(add.length + " Aufgabe(n) geladen" + (list.length - add.length ? ", " + (list.length - add.length) + " schon vorhanden oder ungültig." : "."));
   } catch (e) { say("Diese Datei konnte nicht gelesen werden."); }
@@ -234,11 +258,20 @@ $("addForm").addEventListener("submit", e => {
   e.preventDefault();
   const v = $("newTodo").value.trim();
   if (!v) return;
-  todos.push({ id: Date.now(), text: v, done: false, star: 0 });
-  $("newTodo").value = "";
+  const now = Date.now();
+  todos.push({ id: now, created: now, text: v, done: false, star: 0, due: $("newDue").value });
+  $("newTodo").value = ""; $("newDue").value = "";
   if (filter === "done") setFilter("open");
   remember(v);
   save(); render(); $("newTodo").focus();
+});
+
+// Fälligkeitsdatum ändern (das Erstellungsdatum bleibt unveränderlich)
+$("list").addEventListener("change", e => {
+  const d = e.target.closest("[data-due]");
+  if (!d) return;
+  const o = todos.find(x => x.id === +d.dataset.due);
+  if (o) { o.due = d.value; save(); render(); }
 });
 
 $("list").addEventListener("click", e => {
