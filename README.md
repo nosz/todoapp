@@ -25,6 +25,7 @@ Aufgaben in Sekunden erfassen: Seite öffnen, tippen, Enter. Das Eingabefeld ist
 | Funktion | Beschreibung |
 |---|---|
 | Aufgabe hinzufügen | Text eingeben, Enter oder „Hinzufügen" |
+| Vorschläge | Beim Tippen schlägt die App die letzten 30 Einträge vor (ohne Doppelte, neueste zuerst); sie bleiben auch nach dem Löschen einer Aufgabe erhalten |
 | Erledigen | Häkchen setzen; die Aufgabe wandert in „Erledigt" |
 | Wichtig markieren | Stern ★; wichtige Aufgaben stehen oben mit orangem Balken |
 | Filter | Offen, Erledigt, Alle, mit Zählern |
@@ -35,6 +36,15 @@ Aufgaben in Sekunden erfassen: Seite öffnen, tippen, Enter. Das Eingabefeld ist
 1. `index.html` per Doppelklick im Browser öffnen.
 2. Aufgabe tippen, Enter drücken.
 3. Mit dem Häkchen als erledigt markieren, mit dem Stern als wichtig.
+
+## PWA und Updates
+
+- Installierbar (Startbildschirm / „App installieren"), Vollbild ohne Browserleiste, App-Hülle offline verfügbar.
+- Dateien: `manifest.webmanifest`, `sw.js`, `icons\` (192, 512, maskable 512, Apple-Touch-Icon).
+- Wird eine neue Version hochgeladen, erscheint unten „Neue Version verfügbar" mit „Jetzt aktualisieren". Die Prüfung läuft beim Zurückkehren in die App und stündlich.
+- Voraussetzung: https. Beim Öffnen der Datei vom Rechner läuft die App normal, aber ohne PWA-Funktionen.
+- Beim Hochladen alle Dateien des Ordners mitnehmen, nicht nur `index.html`.
+- Bei jeder Änderung die Version in `sw.js`, `index.html` (meta und sichtbar) und hier hochzählen.
 
 ## Datenspeicherung und Grenzen
 
@@ -65,3 +75,5 @@ Aufgaben in Sekunden erfassen: Seite öffnen, tippen, Enter. Das Eingabefeld ist
 |---|---|
 | 2026-10-26 | Erste Version |
 | 2026-10-26 | In eigenen Ordner mit `index.html` verschoben |
+| 2026-10-26 | **1.2.0**: PWA (Manifest, Service Worker, Icons, installierbar, offline) und Meldung „Neue Version verfügbar" mit „Jetzt aktualisieren" / „Später". Lokal geprüft: Manifest gültig, Icons vorhanden, Skript-Syntax, Banner-Optik. Erst online prüfbar: Installierbarkeit, Service-Worker-Registrierung, Update-Meldung, Offline. Noch nicht hochgeladen |
+| 2026-10-26 | **1.1.0**: Automatische Vorschläge aus den letzten Einträgen und Versionsanzeige (lokal; noch nicht auf nosz.github.io hochgeladen). Die zuvor online liegende Version trägt keine Nummer und gilt als 1.0.0 |
